@@ -59,7 +59,7 @@ RUN pip install \
         decorator \
         soundfile \
         librosa \
-        modelscope>=1.18.1 \
+        "modelscope>=1.18.1" \
         -i ${INDEX_URL}
 
 # Pre-download vLLM test audio assets

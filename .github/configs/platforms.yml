@@ -12,3 +12,5 @@ platforms:
     enabled: true
   maca:
     enabled: true
+  musa:
+    enabled: true
