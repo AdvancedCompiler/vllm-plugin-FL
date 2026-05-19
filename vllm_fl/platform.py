@@ -61,7 +61,8 @@ class PlatformFL(Platform):
 
     def is_cuda_alike(self) -> bool:
         """Stateless version of [torch.cuda.is_available][]."""
-        if self.vendor_name == "iluvatar":
+        target_vendors = ["iluvatar", "hygon"]
+        if self.vendor_name and self.vendor_name.lower() in target_vendors:
             return False
         if self.vendor_name == "musa":
             return True
@@ -69,6 +70,7 @@ class PlatformFL(Platform):
 
     def is_cuda(self) -> bool:
         """Stateless version of [torch.cuda.is_available][]."""
+
         if self.vendor_name == "musa":
             return True
         return self.device_type == "cuda" and self.vendor_name == "nvidia"
@@ -296,7 +298,7 @@ class PlatformFL(Platform):
 
     @classmethod
     def support_static_graph_mode(cls) -> bool:
-        if cls.vendor_name in ["nvidia", "ascend", "metax", "kunlunxin"]:
+        if cls.vendor_name in ["nvidia", "ascend", "metax", "kunlunxin", "hygon"]:
             return True
         return False
 
@@ -336,6 +338,10 @@ class PlatformFL(Platform):
     @classmethod
     def use_custom_allreduce(cls) -> bool:
         if cls.dist_backend == "flagcx":
+            return False
+
+        target_vendors = ["hygon"]
+        if cls.vendor_name and cls.vendor_name.lower() in target_vendors:
             return False
         return True
 

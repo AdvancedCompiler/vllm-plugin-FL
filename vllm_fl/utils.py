@@ -41,8 +41,8 @@ VENDOR_DEVICE_MAP: dict[str, dict[str, str]] = {
     "mthreads": {"device_type": "musa", "device_name": "musa"},
     # Registered backend: vendor/kunlunxin
     "kunlunxin": {"device_type": "cuda", "device_name": "kunlunxin"},
-    # Registered backend: vendor/musa
-    "hygon": {"device_type": "cuda", "device_name": "rocm"},
+    # Registered backend: vendor/hygon
+    "hygon": {"device_type": "cuda", "device_name": "cuda"},
 }
 
 
