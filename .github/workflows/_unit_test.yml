@@ -90,3 +90,4 @@ jobs:
           user_id: '000000000000000000'
           report_path: 'coverage-${{ inputs.platform }}.json'
           fail_on_error: 'false'
+          runner_set_name: ${{ fromJson(inputs.runner_labels)[0] }}
