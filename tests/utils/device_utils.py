@@ -92,6 +92,6 @@ def skip_if_not_multi_accelerator(fn):
 
 
 def skip_if_not_nvidia(fn):
-    return pytest.mark.skipif(
-        get_backend() != "nvidia", reason="NVIDIA-specific test"
-    )(fn)
+    return pytest.mark.skipif(get_backend() != "nvidia", reason="NVIDIA-specific test")(
+        fn
+    )
