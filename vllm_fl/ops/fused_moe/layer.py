@@ -80,11 +80,23 @@ class UnquantizedFusedMoEMethodFL(UnquantizedFusedMoEMethod):
 
 
 class FusedMoEFL(FusedMoE):
+
     def forward_oot(
         self,
         hidden_states: torch.Tensor,
         router_logits: torch.Tensor,
     ) -> Union[torch.Tensor, tuple[torch.Tensor, torch.Tensor]]:
+        
+        def reduce_output(states: torch.Tensor) -> torch.Tensor:
+            if (
+                not self.is_sequence_parallel
+                and not self.use_dp_chunking
+                and self.reduce_results
+                and (self.tp_size > 1 or self.ep_size > 1)
+            ):
+                states = self.maybe_all_reduce_tensor_model_parallel(states)
+            return states
+
         og_hidden_states = hidden_states.shape[-1]
         if self.hidden_size != og_hidden_states:
             hidden_states = F.pad(
@@ -98,14 +110,19 @@ class FusedMoEFL(FusedMoE):
             fused_output = torch.ops.vllm.moe_forward(
                 hidden_states, router_logits, self.layer_name
             )
-            return fused_output[..., :og_hidden_states]
+            if self.zero_expert_num is not None and self.zero_expert_num > 0:
+                assert isinstance(fused_output, tuple)
+                fused_output, zero_expert_result = fused_output
+                return (reduce_output(fused_output) + zero_expert_result)[
+                      ..., :og_hidden_states]
+            return reduce_output(fused_output)[..., :og_hidden_states]
         else:
             shared_output, fused_output = torch.ops.vllm.moe_forward_shared(
                 hidden_states, router_logits, self.layer_name
             )
             return (
-                shared_output[..., :og_hidden_states],
-                fused_output[..., :og_hidden_states],
+                reduce_output(shared_output)[..., :og_hidden_states],
+                reduce_output(fused_output)[..., :og_hidden_states],
             )
 
     def select_experts(
