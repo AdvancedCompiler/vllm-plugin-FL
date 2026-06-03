@@ -69,9 +69,9 @@ def register_oot_ops(whitelist: Optional[List[str]] = None) -> None:
             continue
 
         # unquantized_fused_moe_method only registers when use_flaggems_op is True
-        if op_name == "unquantized_fused_moe_method" and not use_flaggems_op(op_name):
-            logger.debug(f"Skipping '{op_name}': use_flaggems_op returned False")
-            continue
+        # if op_name == "unquantized_fused_moe_method" and not use_flaggems_op(op_name):
+        #     logger.debug(f"Skipping '{op_name}': use_flaggems_op returned False")
+        #     continue
 
         op_cls, registration_name = OOT_OPS[op_name]
         logger.info(f"Registering oot op: {op_name} as '{registration_name}'")

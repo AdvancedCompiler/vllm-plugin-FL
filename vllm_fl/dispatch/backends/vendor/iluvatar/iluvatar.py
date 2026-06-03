@@ -161,4 +161,43 @@ class IluvatarBackend(Backend):
                 return AttentionBackendEnum.FLASHMLA_SPARSE.get_path()
             return AttentionBackendEnum.FLASHMLA.get_path()
 
-        return AttentionBackendEnum.FLASH_ATTN.get_path()
+        return AttentionBackendEnum.TRITON_ATTN.get_path()
+
+    def moe_align_block_size(
+        self,
+        topk_ids: torch.Tensor,
+        block_size: int,
+        num_experts: int,
+        expert_map: Optional[torch.Tensor] = None,
+        pad_sorted_ids: bool = False,
+        ignore_invalid_experts: bool = False,
+    ):
+        from .impl.fused_moe import moe_align_block_size_iluvatar
+
+        return moe_align_block_size_iluvatar(
+            topk_ids,
+            block_size,
+            num_experts,
+            expert_map,
+            pad_sorted_ids,
+            ignore_invalid_experts,
+        )
+
+    def moe_sum(self, inp, out):
+        from .impl.fused_moe import moe_sum_iluvatar
+
+        moe_sum_iluvatar(inp, out)
+
+    def topk_softmax(
+        self,
+        topk_weights,
+        topk_indices,
+        token_expert_indices,
+        gating_output,
+        renormalize=False,
+    ):
+        from .impl.fused_moe import topk_softmax_iluvatar
+
+        return topk_softmax_iluvatar(
+            topk_weights, topk_indices, token_expert_indices, gating_output, renormalize
+        )

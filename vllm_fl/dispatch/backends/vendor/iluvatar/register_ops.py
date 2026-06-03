@@ -73,6 +73,31 @@ def register_builtins(registry) -> None:
             vendor="iluvatar",
             priority=BackendPriority.VENDOR,
         ),
+        # Fused Moe
+        OpImpl(
+            op_name="moe_align_block_size",
+            impl_id="vendor.iluvatar",
+            kind=BackendImplKind.VENDOR,
+            fn=_bind_is_available(backend.moe_align_block_size, is_avail),
+            vendor="iluvatar",
+            priority=BackendPriority.VENDOR,
+        ),
+        OpImpl(
+            op_name="moe_sum",
+            impl_id="vendor.iluvatar",
+            kind=BackendImplKind.VENDOR,
+            fn=_bind_is_available(backend.moe_sum, is_avail),
+            vendor="iluvatar",
+            priority=BackendPriority.VENDOR,
+        ),
+        OpImpl(
+            op_name="topk_softmax",
+            impl_id="vendor.iluvatar",
+            kind=BackendImplKind.VENDOR,
+            fn=_bind_is_available(backend.topk_softmax, is_avail),
+            vendor="iluvatar",
+            priority=BackendPriority.VENDOR,
+        ),
     ]
 
     registry.register_many(impls)
